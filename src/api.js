@@ -32,8 +32,9 @@ export function snapshotApi(root, subpath = '') {
   if (!file) return { available: false, exports: {}, diagnostics: ['Entrypoint is absent, not exported, or uses an unsupported wildcard/condition.'] };
   const program = ts.createProgram([file], { allowJs: true, checkJs: true, strict: true, skipLibCheck: true, noEmit: true, target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.NodeNext, moduleResolution: ts.ModuleResolutionKind.NodeNext });
   const checker = program.getTypeChecker(), source = program.getSourceFile(file);
+  if (!source) return { available: false, exports: {}, diagnostics: ['Entrypoint format is not supported by the TypeScript compiler.'] };
   const module = checker.getSymbolAtLocation(source);
-  const exports = {};
+  const exports = Object.create(null);
   const typeText = type => checker.typeToString(type, undefined, ts.TypeFormatFlags.NoTruncation);
   function signatures(type, kind) {
     return checker.getSignaturesOfType(type, kind).map(sig => ({

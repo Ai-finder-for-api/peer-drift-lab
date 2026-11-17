@@ -5,7 +5,10 @@
   "type": "module",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
   },
   "bin": {
     "peer-drift": "./bin/peer-drift.js"
@@ -23,8 +26,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test",
-    "check": "node --check src/index.js && node --check bin/peer-drift.js",
+    "test": "node --test test/core.test.js",
+    "check": "node --check src/index.js && node --check bin/peer-drift.js && tsc --noEmit --strict --skipLibCheck --target ES2022 --module NodeNext --moduleResolution NodeNext test/types.mts",
     "prepublishOnly": "npm test && npm run check"
   },
   "keywords": [
@@ -52,5 +55,6 @@
   "homepage": "https://github.com/Ai-finder-for-api/peer-drift-lab#readme",
   "bugs": {
     "url": "https://github.com/Ai-finder-for-api/peer-drift-lab/issues"
-  }
+  },
+  "types": "./src/index.d.ts"
 }

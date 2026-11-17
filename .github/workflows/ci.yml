@@ -29,8 +29,27 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --ignore-scripts
-      - name: Real Docker simulation
+      - name: Real baseline and upgraded Docker simulations
         run: |
           mkdir -p /tmp/peer-drift-smoke
-          printf '%s\n' '{"name":"sandbox-smoke","version":"1.0.0","private":true,"scripts":{"test":"node -e \"console.log(42)\""}}' > /tmp/peer-drift-smoke/package.json
-          node bin/peer-drift.js simulate --project /tmp/peer-drift-smoke --timeout 180000
+          printf '%s\n' '{"name":"sandbox-smoke","version":"1.0.0","private":true,"dependencies":{"is-number":"6.0.0"},"scripts":{"test":"node test.cjs"}}' > /tmp/peer-drift-smoke/package.json
+          printf '%s\n' "const assert = require('node:assert/strict'); assert.equal(require('is-number')('42'), true); console.log('tested is-number@' + require('is-number/package.json').version);" > /tmp/peer-drift-smoke/test.cjs
+          node bin/peer-drift.js simulate --project /tmp/peer-drift-smoke --timeout 180000 --output baseline.json
+          node bin/peer-drift.js simulate --project /tmp/peer-drift-smoke --upgrade is-number@7.0.0 --timeout 180000 --output upgraded.json
+          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('baseline.json')); const b=JSON.parse(fs.readFileSync('upgraded.json')); if(a.status!=='passed'||b.status!=='passed'||!a.results[1].stdout.includes('6.0.0')||!b.results[1].stdout.includes('7.0.0')) process.exit(1);"
+      - name: Real failing test propagates nonzero status
+        run: |
+          set +e
+          node bin/peer-drift.js simulate --project /tmp/peer-drift-smoke --timeout 180000 --output failed.json -- node -e 'process.exit(7)'
+          result=$?
+          set -e
+          test "$result" -eq 1
+          node -e "const r=require('./failed.json'); if(r.status!=='failed'||r.results[1].exitCode!==7) process.exit(1);"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-simulation-evidence
+          path: |
+            baseline.json
+            upgraded.json
+            failed.json

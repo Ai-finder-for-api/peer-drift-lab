@@ -18,7 +18,9 @@ export function simulate({ project, versions = {}, command = ['npm', 'test'], im
   const prefix = 'peer-drift-' + crypto.randomBytes(6).toString('hex');
   const start = Date.now(), results = [];
   try {
-    fs.cpSync(path.resolve(project), stage, { recursive: true, dereference: false, filter: src => {
+    const projectRoot = path.resolve(project);
+    if (temp.startsWith(projectRoot + path.sep) || projectRoot === path.parse(projectRoot).root) throw new Error('Project must not contain the temporary workspace directory');
+    fs.cpSync(projectRoot, stage, { recursive: true, dereference: false, filter: src => {
       const name = path.basename(src);
       return !excluded.has(name) && !name.startsWith('.env') && !/\.(pem|key|p12|pfx)$/i.test(name) && !fs.lstatSync(src).isSymbolicLink();
     } });

@@ -182,3 +182,24 @@ test('CLI emits SARIF and enforces warning policy', t => {
   const r = spawnSync(process.execPath, [path.resolve('bin/peer-drift.js'), 'scan', '--project', f.root, '--before', old, '--after', next, '--format', 'sarif', '--fail-on', 'warning'], { encoding: 'utf8' });
   assert.equal(r.status, 1, r.stderr); assert.equal(JSON.parse(r.stdout).version, '2.1.0');
 });
+test('constructor parameter requirement and removed callability are detected', t => {
+  const f = fixture(t);
+  const before = snapshotApi(f.pkg('a', '1.0.0', 'export declare class Client { constructor(token?: string); } export declare function run(): void;'));
+  const after = snapshotApi(f.pkg('b', '1.0.1', 'export declare class Client { constructor(token: string); } export declare const run: string;'));
+  const findings = compareApis(before, after);
+  assert.ok(findings.some(f => f.code === 'PARAMETER_REQUIRED' && f.symbol === 'Client'));
+  assert.ok(findings.some(f => f.code === 'CALLABILITY_REMOVED' && f.symbol === 'run'));
+});
+test('analysis includes engine mismatches and no-static-usage warnings', t => {
+  const f = fixture(t); f.write('package.json', '{"name":"app"}');
+  const before = f.pkg('a', '1.0.0', declarations);
+  const after = f.pkg('b', '1.0.1', declarations, { engines: { node: '>=999.0.0' } });
+  const r = analyze({ project: f.root, updates: [{ before, after }] });
+  assert.ok(r.findings.some(f => f.code === 'NODE_ENGINE_MISMATCH'));
+  assert.ok(r.findings.some(f => f.code === 'NO_STATIC_USAGE'));
+});
+test('sandbox refuses non-exact versions without changing original files', t => {
+  const f = fixture(t); const original = '{"dependencies":{"demo-lib":"1.0.0"}}'; f.write('package.json', original);
+  assert.throws(() => simulate({ project: f.root, versions: { 'demo-lib': '^2.0.0' }, runner: () => ({ status: 0 }) }), /exact registry versions/);
+  assert.equal(fs.readFileSync(path.join(f.root, 'package.json'), 'utf8'), original);
+});
