@@ -1,0 +1,36 @@
+name: QA
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run check
+      - run: npm pack --dry-run
+  sandbox-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts
+      - name: Real Docker simulation
+        run: |
+          mkdir -p /tmp/peer-drift-smoke
+          printf '%s\n' '{"name":"sandbox-smoke","version":"1.0.0","private":true,"scripts":{"test":"node -e \"console.log(42)\""}}' > /tmp/peer-drift-smoke/package.json
+          node bin/peer-drift.js simulate --project /tmp/peer-drift-smoke --timeout 180000

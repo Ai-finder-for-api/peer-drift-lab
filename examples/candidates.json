@@ -1,0 +1,12 @@
+{
+  "current": { "react": "18.2.0", "demo-widget": "1.0.0" },
+  "candidates": {
+    "react": [
+      { "name": "react", "version": "18.2.0" },
+      { "name": "react", "version": "19.0.0" }
+    ],
+    "demo-widget": [
+      { "name": "demo-widget", "version": "2.0.0", "peerDependencies": { "react": "^19.0.0" } }
+    ]
+  }
+}

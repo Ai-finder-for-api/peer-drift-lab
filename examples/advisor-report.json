@@ -1,0 +1,37 @@
+{
+  "status": "peer-compatible",
+  "examined": 2,
+  "truncated": false,
+  "changes": 2,
+  "versions": {
+    "demo-widget": "2.0.0",
+    "react": "19.0.0"
+  },
+  "npm": {
+    "dependencies": {
+      "demo-widget": "2.0.0",
+      "react": "19.0.0"
+    },
+    "overrides": {
+      "demo-widget": "$demo-widget",
+      "react": "$react"
+    }
+  },
+  "yarn": {
+    "resolutions": {
+      "demo-widget": "2.0.0",
+      "react": "19.0.0"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "demo-widget": "2.0.0",
+      "react": "19.0.0"
+    }
+  },
+  "caveats": [
+    "Peer constraints only: API, engines, ordinary transitive ranges and runtime behavior need separate validation.",
+    "All candidate packages are treated as root-level packages; merge into existing dependency sections, not blindly over the manifest.",
+    "npm overrides reference direct dependency specs to avoid EOVERRIDE."
+  ]
+}

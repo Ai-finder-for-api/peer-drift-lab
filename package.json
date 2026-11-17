@@ -1,0 +1,56 @@
+{
+  "name": "@ai-finder-for-api/peer-drift-lab",
+  "version": "0.1.0",
+  "description": "AST dependency impact analysis, silent TypeScript API drift detection, peer constraint planning and isolated upgrade simulation.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "peer-drift": "./bin/peer-drift.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "README.md",
+    "LICENSE",
+    "examples",
+    "SECURITY.md",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/index.js && node --check bin/peer-drift.js",
+    "prepublishOnly": "npm test && npm run check"
+  },
+  "keywords": [
+    "qa_testing",
+    "peer-dependencies",
+    "api-drift",
+    "typescript",
+    "dependency-upgrade",
+    "testing"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "semver": "^7.7.3",
+    "tar": "^7.5.7",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ai-finder-for-api/peer-drift-lab.git"
+  },
+  "homepage": "https://github.com/Ai-finder-for-api/peer-drift-lab#readme",
+  "bugs": {
+    "url": "https://github.com/Ai-finder-for-api/peer-drift-lab/issues"
+  }
+}

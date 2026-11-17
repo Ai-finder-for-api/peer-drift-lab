@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked",
+  "project": "drift-demo-consumer",
+  "changes": [
+    {
+      "package": "drift-demo-library",
+      "from": "1.0.0",
+      "to": "1.0.1",
+      "semver": "patch",
+      "imports": 1,
+      "entrypoints": [
+        {
+          "subpath": ".",
+          "before": {
+            "available": true,
+            "typed": true,
+            "entrypoint": "index.d.ts",
+            "exports": {
+              "greet": {
+                "type": "(name: string, punctuation?: string | undefined) => string",
+                "calls": [
+                  {
+                    "parameters": [
+                      {
+                        "name": "name",
+                        "optional": false,
+                        "rest": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "punctuation",
+                        "optional": true,
+                        "rest": false,
+                        "type": "string | undefined"
+                      }
+                    ],
+                    "returnType": "string"
+                  }
+                ],
+                "constructors": []
+              },
+              "legacy": {
+                "type": "number",
+                "calls": [],
+                "constructors": []
+              }
+            },
+            "diagnostics": []
+          },
+          "after": {
+            "available": true,
+            "typed": true,
+            "entrypoint": "index.d.ts",
+            "exports": {
+              "greet": {
+                "type": "(name: string, punctuation: string) => Promise<string>",
+                "calls": [
+                  {
+                    "parameters": [
+                      {
+                        "name": "name",
+                        "optional": false,
+                        "rest": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "punctuation",
+                        "optional": false,
+                        "rest": false,
+                        "type": "string"
+                      }
+                    ],
+                    "returnType": "Promise<string>"
+                  }
+                ],
+                "constructors": []
+              }
+            },
+            "diagnostics": []
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "code": "PARAMETER_REQUIRED",
+      "symbol": "greet",
+      "severity": "error",
+      "message": "Previously optional or absent arguments are now required.",
+      "package": "drift-demo-library",
+      "subpath": ".",
+      "locations": [
+        {
+          "file": "index.ts",
+          "line": 1,
+          "column": 1
+        }
+      ],
+      "semverSafeClaim": true
+    },
+    {
+      "code": "RETURN_TYPE_CHANGED",
+      "symbol": "greet",
+      "severity": "warning",
+      "message": "Return type changed from string to Promise<string>.",
+      "package": "drift-demo-library",
+      "subpath": ".",
+      "locations": [
+        {
+          "file": "index.ts",
+          "line": 1,
+          "column": 1
+        }
+      ],
+      "semverSafeClaim": true
+    },
+    {
+      "code": "SIGNATURE_CHANGED",
+      "symbol": "greet",
+      "severity": "warning",
+      "message": "Parameter shape changed; check affected calls and run tests.",
+      "package": "drift-demo-library",
+      "subpath": ".",
+      "locations": [
+        {
+          "file": "index.ts",
+          "line": 1,
+          "column": 1
+        }
+      ],
+      "semverSafeClaim": true
+    },
+    {
+      "code": "EXPORT_REMOVED",
+      "symbol": "legacy",
+      "severity": "error",
+      "message": "An imported export no longer exists.",
+      "package": "drift-demo-library",
+      "subpath": ".",
+      "locations": [
+        {
+          "file": "index.ts",
+          "line": 1,
+          "column": 1
+        }
+      ],
+      "semverSafeClaim": true
+    }
+  ],
+  "trace": {
+    "imports": [
+      {
+        "file": "index.ts",
+        "line": 1,
+        "column": 1,
+        "specifier": "drift-demo-library",
+        "package": "drift-demo-library",
+        "symbols": [
+          "greet",
+          "legacy"
+        ],
+        "kind": "import"
+      }
+    ],
+    "warnings": []
+  },
+  "limitations": [
+    "Static analysis does not prove runtime compatibility.",
+    "Peer validation covers installed root packages, not the complete transitive dependency graph.",
+    "Export-condition selection is types/import-first; wildcard exports and differing CJS/ESM surfaces require manual review.",
+    "Method bodies, class instance members, computed imports and behavioral changes require tests."
+  ],
+  "simulation": {
+    "status": "not-run"
+  }
+}
